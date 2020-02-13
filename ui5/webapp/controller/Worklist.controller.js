@@ -98,7 +98,7 @@ sap.ui.define([
 				var sQuery = oEvent.getParameter("query");
 
 				if (sQuery && sQuery.length > 0) {
-					aTableSearchState = [new Filter("name", FilterOperator.Contains, sQuery)];
+					aTableSearchState = [new Filter({path: "name", operator: FilterOperator.Contains, value1: sQuery, caseSensitive: false})];
 				}
 				this._applySearch(aTableSearchState);
 			}
