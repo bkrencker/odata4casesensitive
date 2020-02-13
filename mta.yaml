@@ -1,5 +1,5 @@
 ID: odata4casesensitive
-_schema-version: "2.1"
+_schema-version: '2.1'
 parameters:
   deploy_mode: html5-repo
 version: 0.0.1
@@ -12,11 +12,24 @@ modules:
       memory: 256M
     requires:
       - name: odata4casesensitive_html5_repo_runtime
+      - name: srv_api
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: srv_api
+          url: '~{url}'
+      - name: odata4casesensitive-uaa
   - name: odata4casesensitive_ui_deployer
     type: com.sap.html5.application-content
     path: odata4casesensitive_ui_deployer
     requires:
       - name: odata4casesensitive_html5_repo_host
+    build-parameters:
+      requires:
+        - name: ui5
+          artifacts:
+            - './*'
+          target-path: resources/ui5
   - name: odata4casesensitive-db
     type: hdb
     path: db
@@ -34,10 +47,17 @@ modules:
     provides:
       - name: srv_api
         properties:
-          url: ${default-url}
+          url: '${default-url}'
     requires:
       - name: odata4casesensitive-db-hdi-container
       - name: odata4casesensitive-uaa
+  - name: ui5
+    type: html5
+    path: ui5
+    build-parameters:
+      builder: grunt
+      supported-platforms: []
+      build-result: dist
 resources:
   - name: odata4casesensitive_html5_repo_runtime
     parameters:
@@ -52,12 +72,12 @@ resources:
   - name: odata4casesensitive-db-hdi-container
     type: com.sap.xs.hdi-container
     properties:
-      hdi-container-name: ${service-name}
+      hdi-container-name: '${service-name}'
   - name: odata4casesensitive-uaa
     type: org.cloudfoundry.managed-service
     parameters:
       service-plan: application
       service: xsuaa
       config:
-        xsappname: odata4casesensitive-${space}
+        xsappname: 'odata4casesensitive-${space}'
         tenant-mode: dedicated
